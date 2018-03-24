@@ -1,5 +1,4 @@
 # CW2/FAS2 Weapon Attachment Vendor (DarkRP Support)
-- - -
 This is a weapon attachment vendor for Customizable Weaponry 2 and Firearms Source 2. This is a plug-n-play addon for all gamemodes and supports DarkRP 2.6+.
 
 Attachment Vendor supports the following addons:
@@ -15,25 +14,20 @@ This addon *will* work **WITHOUT** any of these, however the vendor will be usel
 If you buy this addon and no weapons appear in the vendor, make sure that you have any weapon from the collections above on your player. This is an attachment vendor, not a weapon vendor.
 
 ## HOW TO INSTALL
-- - -
 1. Download the ZIP
 2. Copy the `CW2-FAS2-Weapon-Attachment-Vendor-master` folder into garrysmod/addons.
 3. Configure the Attachment Vendor: `lua/attachment_vendor/configs/[sv|sh]_config.lua`
 
 ## Batteries Included
-- - -
 This addon comes included with a list of all CW2 and FAS2 attachments with default prices.
 
 ## Malfunctioning
-- - -
 The vendor has the ability to malfunction when damaged. Possibilities include: Taking money but not giving the attachment (*steal*), giving the attachment for free (*free*), giving extra attachments for free (*extra*) and operating normally. All of this can be configured, including disabling malfunctioning altogether.
 
 ## Installation
-- - -
 Installing this addon is as simple as extracing the folder to addons. It will automatically appear in DarkRP for the Gun Dealer job by default.
 
 ## Configuration
-- - -
 There 2 are files you might want to look at if you want to configure this vendor for your server:
 * **lua/attachment_vendor/configs/(sv/sh)_config.lua** is where the attachments and respective prices are stored, as well as malfunction configuration and a function to retrieve the price of an attachment.
 * As of version *1.6.0*, the DarkRP specific config file has been removed and merged with the regular config files. The hooks have been replaced with functions.
@@ -41,15 +35,12 @@ There 2 are files you might want to look at if you want to configure this vendor
 Editing other files will probably break stuff and I probably wont help you.
 
 ## Troubleshooting
-- - -
 If you want to use the [CW2 Mag System](http://steamcommunity.com/sharedfiles/filedetails/?id=486217238), please make sure that your `ATTACHMENT_VENDOR.cw2Mags` config is **enabled**, otherwise you will get errors like `Invalid attachment (srMag)`.
 
 ## Persistent Vendor Entities
-- - -
 As of version *1.4.0*, Attachment Vendor now supports location configurations which can be added in the `locations` table in `lua/attachment_vendor/configs/sv_config.lua`. This lets you place vendor entities around the map that will stay there even after a server reset. These locations, however, are map-specific and locations may vary between maps. 2 added bonuses with locations is that vendor entities can be set to be indestructible (To stop those pesky players destroying them) and they can be given an id/name which can be used in any of the hooks and functions (See below) that take a vendor entity, simply call **ent:Getid()**.
 
 ## Developers
-- - -
 If you are a developer looking to integrate this into your server, there are several things that might be of interest to you.
 Attachment Vendor has the ability to overwrite the CW2 and FAS2 functions responsible for giving and removing weapon attachments.
 
@@ -131,12 +122,10 @@ Attachment Vendor comes with several hooks and functions for you to use to add e
     Nothing.
 
 ## Database Support
-- - -
 Attachment Vendor supports saving and loading attachments via database. Unfortunately, only SQLite is supported for now.
 The config to enable database support is "persistent.enabled".
 
 Attachments are loaded once on initial spawn and are given in the loadout. When the attachments are given, the hook `playerLoadedWeaponAttachments` is called.
  
 ## Support
-- - -
 Please do not add me on Steam, create a [Ticket](https://github.com/GamerGambit/CW2-FAS2-Weapon-Attachment-Vendor/issues/new) instead. If you cannot reproduce the error please tell me and please for the love of god include the steps you took that resulted in the error **AND POST THE ERROR MESSAGE**. Tickets that are *just* the error message and nothing else will be closed and ignored.
