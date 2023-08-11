@@ -122,7 +122,7 @@ net.Receive("attvend", function(l)
    for _, weptbl in pairs(LocalPlayer():GetWeapons()) do
       if (isCW2(weptbl) == false && isFAS2(weptbl) == false) then continue; end
       
-      local wepnode = weplist:AddNode(string.Trim(weptbl.PrintName));
+      local wepnode = weplist:AddNode(string.Trim(weptbl:GetPrintName()));
       
       local ammohead = nil;
       for _, attinfo in pairs(istable(weptbl.Attachments) && weptbl.Attachments || {}) do
