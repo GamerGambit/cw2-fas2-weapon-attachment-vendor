@@ -28,20 +28,20 @@ hook.Add("InitPostEntity", "AttachmentVendor:CheckAttachments", function()
    do
       local atts = {};
       for k, v in pairs(istable(CustomizableWeaponry) && CustomizableWeaponry.registeredAttachmentsSKey || {}) do
-         table.insert(atts, k);
+         atts[k] = true;
       end
       
       for k, v in pairs(istable(FAS2_Attachments) && FAS2_Attachments || {}) do
-         table.insert(atts, k);
+         atts[k] = true;
       end
 
       for k, v in pairs(istable(ArcCW) && ArcCW.AttachmentTable || {}) do
-         table.insert(atts, k);
+         atts[k] = true;
       end
       
       for k, v in pairs(atts) do
-         if (isnumber(ATTACHMENT_VENDOR.prices[v]) == false) then
-            missingAttachments = missingAttachments .. v .. "\n";
+         if (isnumber(ATTACHMENT_VENDOR.prices[k]) == false) then
+            missingAttachments = missingAttachments .. k .. "\n";
          end
       end
    end
