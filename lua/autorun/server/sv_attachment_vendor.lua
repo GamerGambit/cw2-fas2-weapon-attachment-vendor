@@ -60,5 +60,14 @@ hook.Add("InitPostEntity", "AttachmentVendor:CheckAttachments", function()
       str = str .. "The following attachments are missing prices:\n" .. string.Trim(missingAttachments);
    end
    
+   if (string.len(str) == 0) then return; end
+   
+   print();
+   print("-------------------");
+   print(" Attachment Vendor");
+   print("-------------------");
+   print(str);
+   print();
+
    file.Write("attachment-vendor.txt", str);
 end);
