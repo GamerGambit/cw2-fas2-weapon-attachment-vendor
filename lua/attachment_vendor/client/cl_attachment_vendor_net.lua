@@ -56,6 +56,10 @@ net.Receive("attvend", function(l)
    attnameprice:Dock(TOP);
    attnameprice:SetContentAlignment(5);
    attnameprice:SetTextColor(color_black);
+
+   local attimg = vgui.Create("DImage", attinfopnl);
+   attimg:Dock(FILL);
+   attimg:Hide();
    
    local attmodel = vgui.Create("DAdjustableModelPanel", attinfopnl);
    attmodel:Dock(FILL);
@@ -65,17 +69,19 @@ net.Receive("attvend", function(l)
       if (IsValid(this.Entity) == false) then return; end
       oldAdjMdlPnlFPC(this);
    end;
+   attmodel:Hide();
    
    local buy = vgui.Create("DButton", attinfopnl);
    buy:Dock(BOTTOM);
    buy:DockMargin(5, 5, 5, 5);
    buy:Hide();
    
-   attinfopnl.Setup = function(this, attname, model, class)
+   attinfopnl.Setup = function(this, attname, modelOrMaterial, class)
+      local isAmmo = attname == "buyAmmo";
       local price;
       local name;
 
-      if (attname == "buyAmmo") then
+      if (isAmmo) then
          price = ATTACHMENT_VENDOR.ammo.price;
          name = "Ammo";
       else
@@ -85,13 +91,21 @@ net.Receive("attvend", function(l)
       
       local pricestr = tostring(price);
       attnameprice:SetText(name .. " - $" .. pricestr);
-      
-      attmodel:SetModel(model);
-      
-      local tab = PositionSpawnIcon(attmodel:GetEntity(), attmodel:GetEntity():GetPos());
-      attmodel:SetCamPos(tab.origin);
-      attmodel:SetFOV(tab.fov);
-      attmodel:SetLookAng(tab.angles);
+
+      if (type(modelOrMaterial) == "IMaterial") then
+         attimg:SetMaterial(modelOrMaterial);
+         attimg:Show();
+         attmodel:Hide();
+      elseif (type(modelOrMaterial) == "string") then
+         attmodel:SetModel(modelOrMaterial);
+         
+         local tab = PositionSpawnIcon(attmodel:GetEntity(), attmodel:GetEntity():GetPos());
+         attmodel:SetCamPos(tab.origin);
+         attmodel:SetFOV(tab.fov);
+         attmodel:SetLookAng(tab.angles);
+         attmodel:Show();
+         attimg:Hide();
+      end
       
       buy:SetText("Buy for $" .. pricestr);
       buy.DoClick = function(this)
@@ -102,7 +116,7 @@ net.Receive("attvend", function(l)
          net.SendToServer();
       end;
       buy.Think = function(this)
-         if (isCW2Mag(attname) == false && LocalPlayer():hasWeaponAttachment(attname, base)) then
+         if (isAmmo == false && isCW2Mag(attname) == false && LocalPlayer():hasWeaponAttachment(attname, base)) then
             this:SetText("[Already Owned]");
             this:SetDisabled(true);
             return;
@@ -120,34 +134,38 @@ net.Receive("attvend", function(l)
    local weplist = vgui.Create("DTree");
    
    for _, weptbl in pairs(LocalPlayer():GetWeapons()) do
-      if (isCW2(weptbl) == false && isFAS2(weptbl) == false) then continue; end
+      if (isCW2(weptbl) == false && isFAS2(weptbl) == false && isARCCW(weptbl) == false) then continue; end
       
       local wepnode = weplist:AddNode(string.Trim(weptbl:GetPrintName()));
       
       local ammohead = nil;
       for _, attinfo in pairs(istable(weptbl.Attachments) && weptbl.Attachments || {}) do
-         local headnode = wepnode:AddNode(attinfo.header);
+         local header = getAttachmentHeader(weptbl, attinfo);
+         local attachments = getSuitableAttachments(weptbl, attinfo);
+
+         // For some reason ArcCW will show all slots even if the current weapon doesnt have attachments for the slot
+         // This will prune those empty slots and only show the slots that have attachments
+         if (table.Count(attachments) == 0) then continue; end
+
+         local headnode = wepnode:AddNode(header);
          
-         if (string.lower(attinfo.header) == "ammo") then
+         if (string.lower(header) == "ammo") then
             ammohead = headnode;
          end
          
-         for _, attname in pairs(attinfo.atts) do
+         for _, attname in pairs(attachments) do
             local name = getAttachmentName(attname);
             if (not isstring(name) or string.len(name) == 0) then continue end
             local attnode = headnode:AddNode(name);
             attnode.DoClick = function(this)
                local mdl;
-               
-               if (attinfo.header == "Ammo") then
+               if (header == "Ammo") then
                   mdl = "models/items/357ammo.mdl";
-               elseif (istable(weptbl.AttachmentModelsVM) && istable(weptbl.AttachmentModelsVM[attname])) then
-                  mdl = weptbl.AttachmentModelsVM[attname].model;
                else
-                  mdl = weptbl.WM || weptbl.WorldModel;
+                  mdl = getAttachmentViewModel(weptbl, attname);
                end
                
-               attinfopnl:Setup(attname, mdl, weptbl.ClassName);
+               attinfopnl:Setup(attname, mdl || getAttachmentImage(attname), weptbl.ClassName);
             end;
             attnode.Think = function(this)
                if (LocalPlayer():hasWeaponAttachment(attname)) then

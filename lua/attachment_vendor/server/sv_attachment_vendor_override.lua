@@ -37,4 +37,17 @@ hook.Add("Initialize", "AttachmentVendorOverride", function()
       ATTACHMENT_VENDOR.override.FASRemoveAttachment = PlayerMeta.FAS2_RemoveAttachment;
       PlayerMeta.FAS2_RemoveAttachment = PlayerMeta.removeWeaponAttachments;
    end
+
+   // ArcCW
+   if (istable(ArcCW)) then
+      ATTACHMENT_VENDOR.override.ARCCWPlayerGiveAtt = ArcCW.PlayerGiveAtt;
+      function ArcCW.PlayerGiveAtt(this, ply, att, amt)
+         ply:giveWeaponAttachments(att, amt, false); // `false` will force these attachments to be networked
+      end
+      
+      ATTACHMENT_VENDOR.override.ARCCWPlayerTakeAtt = ArcCW.PlayerTakeAtt;
+      function ArcCW.PlayerTakeAtt(this, ply, att, amt)
+         ply:removeWeaponAttachments(att, amt);
+      end
+   end
 end);

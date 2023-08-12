@@ -45,6 +45,18 @@ function isFAS2(base)
    return false;
 end
 
+function isARCCW(base)
+   if (istable(base) || (isstring(base) == false && IsValid(base) && base:IsWeapon())) then
+      return tobool(base.ArcCW);
+   elseif (isstring(base)) then
+      local wepTbl = weapons.Get(base);
+      if (istable(wepTbl) == false) then return false; end
+      return tobool(wepTbl.ArcCW);
+   end
+
+   return false;
+end
+
 function isCW2Attachment(att)
    if (istable(CustomizableWeaponry) == false) then return false; end
    return istable(CustomizableWeaponry.registeredAttachmentsSKey[att]);
@@ -62,6 +74,22 @@ function isFAS2Attachment(att)
    return istable(FAS2_Attachments[att]);
 end
 
+function isARCCWAttachment(att)
+   if (istable(ArcCW) == false) then return false; end
+   return istable(ArcCW.AttachmentTable[att]);
+end
+
+function getAttachmentHeader(base, att)
+   if (isCW2(base) || isFAS2(base)) then
+      return att.header;
+   elseif (isARCCW(base)) then
+      return att.PrintName;
+   end
+
+   ErrorNoHalt(string.format("[Attachment Vendor] Invalid weapon base for attachment header (%s).\n", base:GetPrintName()));
+   return "";
+end
+
 function getAttachmentName(attname)
    if (isCW2Attachment(attname)) then
       return CustomizableWeaponry.registeredAttachmentsSKey[attname].displayName;
@@ -69,10 +97,47 @@ function getAttachmentName(attname)
       return FAS2_Attachments[attname].namefull;
    elseif (isCW2Mag(attname)) then
       return CustomizableWeaponry.magSystem.magTypes[attname];
+   elseif (isARCCWAttachment(attname)) then
+      return ArcCW.AttachmentTable[attname].PrintName;
    end
    
    ErrorNoHalt(string.format("[Attachment Vendor] Invalid attachment (%s).\n", tostring(attname)));
    return "";
+end
+
+function getSuitableAttachments(base, att)
+   if (isCW2(base) || isFAS2(base)) then
+      return att.atts;
+   elseif (isARCCW(base)) then
+      return ArcCW:GetAttsForSlot(att.Slot, base, false);
+   end
+
+   ErrorNoHalt(string.format("[Attachment Vendor] Invalid weapon base for suitable attachments (%s).\n", base:GetPrintName()));
+   return {};
+end
+
+function getAttachmentViewModel(base, attname)
+   if (isCW2(base) || isFAS2(base)) then
+      if (istable(base.AttachmentModelsVM) && istable(base.AttachmentModelsVM[attname])) then
+         return base.AttachmentModelsVM[attname].model;
+      else
+         return base.WM || base.WorldModel;
+      end
+   elseif (isARCCW(base)) then
+      return ArcCW.AttachmentTable[attname].Model;
+   end
+   
+   ErrorNoHalt(string.format("[Attachment Vendor] Invalid weapon base for attachment view model (%s).\n", base:GetPrintName()));
+   return "models/error.mdl";
+end
+
+function getAttachmentImage(attname)
+   if (isARCCWAttachment(attname)) then
+      return ArcCW.AttachmentTable[attname].Icon;
+   end
+   
+   ErrorNoHalt(string.format("[Attachment Vendor] Invalid attachment for image (%s).\n", attname));
+   return Material();
 end
 
 local msg = "Attachment Vendor: A price of $%d is being used for invalid attachment \"%s\".";
@@ -166,6 +231,15 @@ if (SERVER) then
             else
                self:FAS2_PickUpAttachment(v, !notifyOrAmount);
             end
+         elseif (isARCCWAttachment(v)) then
+            if (ATTACHMENT_VENDOR.override.enable) then
+               ATTACHMENT_VENDOR.override.ARCCWPlayerGiveAtt(ArcCW, self, v, 1);
+            else
+               ArcCW:PlayerGiveAtt(self, v, 1);
+            end
+
+            // Always network ArcCW attachments
+            ArcCW:PlayerSendAttInv(self);
          else
             assert(false, string.format("Invalid attachment (%s)", tostring(v)));
          end
@@ -218,6 +292,15 @@ if (SERVER) then
             else
                self:FAS2_RemoveAttachment(v);
             end
+         elseif (isARCCWAttachment(v)) then
+            if (ATTACHMENT_VENDOR.override.enable) then
+               ATTACHMENT_VENDOR.override.ARCCWPlayerTakeAtt(ArcCW, self, v, 1);
+            else
+               ArcCW:PlayerTakeAtt(self, v, 1);
+            end
+            
+            // Always network ArcCW attachments
+            ArcCW:PlayerSendAttInv(self);
          else
             assert(false, string.format("Invalid attachment (%s)", tostring(v)));
          end
@@ -239,6 +322,8 @@ function PlayerMeta:hasWeaponAttachment(att)
       else
          return table.HasValue(FAS2AttOnMe, att);
       end
+   elseif (isARCCWAttachment(att)) then
+      return ArcCW:PlayerGetAtts(self, att) > 0;
    end
    
    return false;
