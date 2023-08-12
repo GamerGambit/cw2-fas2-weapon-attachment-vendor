@@ -32,7 +32,7 @@ hook.Add("InitPostEntity", "AttachmentVendor:CheckAttachments", function()
       end
       
       for k, v in pairs(istable(FAS2_Attachments) && FAS2_Attachments || {}) do
-         //table.insert(atts, k);
+         table.insert(atts, k);
       end
 
       for k, v in pairs(istable(ArcCW) && ArcCW.AttachmentTable || {}) do
