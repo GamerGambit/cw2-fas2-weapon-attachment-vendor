@@ -14,8 +14,7 @@ ATTACHMENT_VENDOR = {
    darkrpAllowedJobs = function() return {TEAM_GUN}; end, // List of DarkRP TEAM_ classes that spawn the vendor from F4/Entities
    
    defaultAttachmentPrice = 100,             // Default price for attachments that arent in the prices table below
-   notifyPlayersOfInvalidAttachments = true, // Should the server print to player chat when it tries to get the price
-                                             // of an attachment that doesnt have a price? (See the prices table below)
+   
    getAttachmentPrice = function(ply, price, vendor)
       if (ply == vendor:Getowning_ent()) then
          return price * 0.75; // Owner pays 75% of the attachment price

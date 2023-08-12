@@ -145,15 +145,6 @@ function getAttachmentPrice(ply, attname, ent)
    local price = ATTACHMENT_VENDOR.prices[attname];
    
    if (isnumber(price) == false) then
-      local str = Format(msg, ATTACHMENT_VENDOR.defaultAttachmentPrice, attname);
-      if (SERVER) then
-         print(str);
-      else
-         if (ATTACHMENT_VENDOR.notifyPlayersOfInvalidAttachments) then
-            ply:ChatPrint(str);
-         end
-      end
-      
       price = 100;
    end
    
