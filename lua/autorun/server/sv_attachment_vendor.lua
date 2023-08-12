@@ -17,7 +17,7 @@ hook.Add("InitPostEntity", "AttachmentVendor:CheckAttachments", function()
    local obsoleteAttachments = "";
    do
       for k, v in pairs(ATTACHMENT_VENDOR.prices) do
-         if (isCW2Attachment(k) == false && isFAS2Attachment(k) == false && isCW2Mag(k) == false) then
+         if (isCW2Attachment(k) == false && isFAS2Attachment(k) == false && isCW2Mag(k) == false && isARCCWAttachment(k) == false) then
             obsoleteAttachments = obsoleteAttachments .. k .. "\n";
          end
       end
@@ -33,6 +33,10 @@ hook.Add("InitPostEntity", "AttachmentVendor:CheckAttachments", function()
       
       for k, v in pairs(istable(FAS2_Attachments) && FAS2_Attachments || {}) do
          //table.insert(atts, k);
+      end
+
+      for k, v in pairs(istable(ArcCW) && ArcCW.AttachmentTable || {}) do
+         table.insert(atts, k);
       end
       
       for k, v in pairs(atts) do
