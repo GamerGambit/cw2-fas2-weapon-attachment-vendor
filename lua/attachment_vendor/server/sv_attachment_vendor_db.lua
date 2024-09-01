@@ -10,8 +10,8 @@ function ATTACHMENT_VENDOR.db:init()
       sql.Begin();
          sql.Query("CREATE TABLE IF NOT EXISTS attachment_vendor (`SteamID` char(20) NOT NULL, `AttachmentName` TEXT NOT NULL );");
       sql.Commit();
-   else /// TODO mysql
-      // NOP
+   else ---@TODO mysql
+      -- NOP
    end
 end
 
@@ -31,8 +31,8 @@ function ATTACHMENT_VENDOR.db:playerLoadAttachments(ply)
       sql.Commit();
       
       ply.attvend_pers = tbl;
-   else /// TODO mysql
-      // NOP
+   else ---@TODO mysql
+      -- NOP
    end
    
    hook.Run("playerLoadedWeaponAttachments", ply, table.Copy(tbl));
@@ -44,12 +44,12 @@ function ATTACHMENT_VENDOR.db:playerAddAttachment(ply, atts)
    if (persistent.module == "sqlite") then
       sql.Begin();
          for k,v in pairs(atts) do
-            if ((isCW2Mag(v) && ATTACHMENT_VENDOR.cw2Mags.ignoreAdd) || (isCW2Mag(v) == false && self:playerHasAttachment(ply, v))) then continue; end
+            if ((isCW2Mag(v) and ATTACHMENT_VENDOR.cw2Mags.ignoreAdd) or (isCW2Mag(v) == false and self:playerHasAttachment(ply, v))) then continue; end
             sql.Query("INSERT INTO attachment_vendor VALUES(" .. sql.SQLStr(ply:SteamID()) .. ", " .. sql.SQLStr(v) .. ");");
          end
       sql.Commit();
-   else /// TODO mysql
-      // NOP
+   else ---@TODO mysql
+      -- NOP
    end
 end
 
@@ -64,8 +64,8 @@ function ATTACHMENT_VENDOR.db:playerRemoveAttachments(ply, atts)
             sql.Query("DELETE FROM attachment_vendor WHERE SteamID = " .. sql.SQLStr(ply:SteamID()) .. " AND AttachmentName = " .. sql.SQLStr(v) .. ";");
          end
       sql.Commit();
-   else /// TODO mysql
-      // NOP
+   else ---@TODO mysql
+      -- NOP
    end
 end
 
@@ -77,9 +77,9 @@ function ATTACHMENT_VENDOR.db:playerHasAttachment(ply, att)
          local res = sql.QueryValue("SELECT COUNT(*) FROM attachment_vendor WHERE SteamID = " .. sql.SQLStr(ply:SteamID()) .. " AND AttachmentName = " .. sql.SQLStr(att) .. ";");
       sql.Commit();
       
-      return tonumber(res) != 0;
-   else /// TODO mysql
-      // NOP
+      return tonumber(res) ~= 0;
+   else ---@TODO mysql
+      -- NOP
    end
 end
 
@@ -94,8 +94,8 @@ hook.Add("PlayerInitialSpawn", "AttachmentVendorLoadAttachments", function(ply)
 end);
 
 hook.Add("PlayerLoadout", "AttachmentVendorLoadout", function(ply)
-   if (ATTACHMENT_VENDOR.persistent.enabled != true) then return; end
-   if (ply.attvend_ready != true) then return; end
+   if (not ATTACHMENT_VENDOR.persistent.enabled) then return; end
+   if (not ply.attvend_ready) then return; end
    
    timer.Simple(0, function()
       ATTACHMENT_VENDOR.cw2Mags.ignoreAdd = true;

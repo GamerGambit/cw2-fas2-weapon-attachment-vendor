@@ -16,7 +16,7 @@ function ENT:Draw()
    ang:RotateAroundAxis(ang:Forward(), 90);
    ang:RotateAroundAxis(ang:Right(), -90);
    
-   local owner = IsValid(self:Getowning_ent()) && self:Getowning_ent():Nick() .. "'s " || "";
+   local owner = IsValid(self:Getowning_ent()) and self:Getowning_ent():Nick() .. "'s " or "";
    
    cam.Start3D2D(pos + ang:Right() * -47 + ang:Up() * 8.5, ang, 0.15);
       draw.SimpleTextOutlined(owner .. "Attachment Vendor", "HUDNumber5", 0, 0, color_white, draw.TEXT_ALIGN_CENTER, draw.TEXT_ALIGN_CENTER, 1, color_black);
@@ -37,7 +37,7 @@ function ENT:Draw()
 end
 
 function ENT:Think()
-   if (self:Getdamaged() == false || CurTime() < self.m_iLastSpark + self.m_iNextSparkTime) then return; end
+   if (self:Getdamaged() == false or CurTime() < self.m_iLastSpark + self.m_iNextSparkTime) then return; end
    
    local ed = EffectData();
    ed:SetOrigin(self:LocalToWorld(self:OBBCenter()));

@@ -13,29 +13,29 @@ AddCSLuaFile("attachment_vendor/client/cl_attachment_vendor_override.lua");
 AddCSLuaFile("attachment_vendor/client/cl_attachment_vendor_ready.lua");
 
 hook.Add("InitPostEntity", "AttachmentVendor:CheckAttachments", function()
-   // OBSOLETE
+   -- OBSOLETE ATTACHMENTS
    local obsoleteAttachments = "";
    do
       for k, v in pairs(ATTACHMENT_VENDOR.prices) do
-         if (isCW2Attachment(k) == false && isFAS2Attachment(k) == false && isCW2Mag(k) == false && isARCCWAttachment(k) == false) then
+         if (isCW2Attachment(k) == false and isFAS2Attachment(k) == false and isCW2Mag(k) == false and isARCCWAttachment(k) == false) then
             obsoleteAttachments = obsoleteAttachments .. k .. "\n";
          end
       end
    end
    
-   // MISSING ATTACHMENTS
+   -- MISSING ATTACHMENTS
    local missingAttachments = "";
    do
       local atts = {};
-      for k, v in pairs(istable(CustomizableWeaponry) && CustomizableWeaponry.registeredAttachmentsSKey || {}) do
+      for k, v in pairs(istable(CustomizableWeaponry) and CustomizableWeaponry.registeredAttachmentsSKey or {}) do
          atts[k] = true;
       end
       
-      for k, v in pairs(istable(FAS2_Attachments) && FAS2_Attachments || {}) do
+      for k, v in pairs(istable(FAS2_Attachments) and FAS2_Attachments or {}) do
          atts[k] = true;
       end
 
-      for k, v in pairs(istable(ArcCW) && ArcCW.AttachmentTable || {}) do
+      for k, v in pairs(istable(ArcCW) and ArcCW.AttachmentTable or {}) do
          atts[k] = true;
       end
       

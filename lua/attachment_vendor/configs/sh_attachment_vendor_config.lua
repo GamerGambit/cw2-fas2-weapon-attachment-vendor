@@ -1,23 +1,23 @@
 ATTACHMENT_VENDOR = {
    override = {
-      enable = true  // If this is set to true, Attachment Vendor will override functions in FAS2 and CW2
-                     // that deal with adding and removing weapon attachments.
-                     // In addition, these new functions will provide hooks for you to decide if an attachment
-                     // should be added or removed and what happens when and attachment is added or removed.
+      enable = true  -- If this is set to true, Attachment Vendor will override functions in FAS2 and CW2
+                     -- that deal with adding and removing weapon attachments.
+                     -- In addition, these new functions will provide hooks for you to decide if an attachment
+                     -- should be added or removed and what happens when and attachment is added or removed.
    },
    
    ammo = {
-      sell = true,      // Should the vendor sell ammo for weapons?
-      price = 50        // Price of buying ammo  (1 clip worth)
+      sell = true,      -- Should the vendor sell ammo for weapons?
+      price = 50        -- Price of buying ammo  (1 clip worth)
    },
    
-   darkrpAllowedJobs = function() return {TEAM_GUN}; end, // List of DarkRP TEAM_ classes that spawn the vendor from F4/Entities
+   darkrpAllowedJobs = function() return {TEAM_GUN}; end, -- List of DarkRP TEAM_ classes that spawn the vendor from F4/Entities
    
-   defaultAttachmentPrice = 100,             // Default price for attachments that arent in the prices table below
+   defaultAttachmentPrice = 100,             -- Default price for attachments that arent in the prices table below
    
    getAttachmentPrice = function(ply, price, vendor)
       if (ply == vendor:Getowning_ent()) then
-         return price * 0.75; // Owner pays 75% of the attachment price
+         return price * 0.75; -- Owner pays 75% of the attachment price
       else
          return price;
       end
@@ -42,12 +42,12 @@ ATTACHMENT_VENDOR = {
    end,
    
    cw2Mags = {
-      enable = true,    // Use the CW2 Magazing addon (http://steamcommunity.com/sharedfiles/filedetails/?id=486217238)
+      enable = true,    -- Use the CW2 Magazing addon (http://steamcommunity.com/sharedfiles/filedetails/?id=486217238)
    },
    
    
    prices = {
-      // CW2
+      -- CW2
       bg_ak74_rpkbarrel = 650,
       bg_ak74_ubarrel = 350,
       bg_ak74foldablestock = 400,
@@ -134,14 +134,14 @@ ATTACHMENT_VENDOR = {
       bg_asval_30rnd = 100,
       bg_makarov_pb_suppressor = 100,
       
-      // CW2 MAG
+      -- CW2 MAG
       pistolMag = 50,
       smgMag = 60,
       arMag = 75,
       brMag = 70,
       srMag = 70,
       
-      // Khris SWEPs Collection
+      -- Khris SWEPs Collection
       bg_r8rail = 100,
       md_mark2em = 100,
       bg_makpmm12rnd = 100,
@@ -218,7 +218,7 @@ ATTACHMENT_VENDOR = {
       md_microt1kh = 100,
       md_muzl = 100,
       
-      // FAS2
+      -- FAS2
       c79 = 100,
       sks20mag = 100,
       compm4 = 100,

@@ -116,13 +116,13 @@ net.Receive("attvend", function(l)
          net.SendToServer();
       end;
       buy.Think = function(this)
-         if (isAmmo == false && isCW2Mag(attname) == false && LocalPlayer():hasWeaponAttachment(attname, base)) then
+         if (isAmmo == false and isCW2Mag(attname) == false and LocalPlayer():hasWeaponAttachment(attname, base)) then
             this:SetText("[Already Owned]");
             this:SetDisabled(true);
             return;
          end
          
-         if (ATTACHMENT_VENDOR.playerCanAffordAttachment(LocalPlayer(), attname, price) != true) then
+         if (not ATTACHMENT_VENDOR.playerCanAffordAttachment(LocalPlayer(), attname, price)) then
             this:SetDisabled(true);
          else
             this:SetDisabled(false);
@@ -134,17 +134,17 @@ net.Receive("attvend", function(l)
    local weplist = vgui.Create("DTree");
    
    for _, weptbl in pairs(LocalPlayer():GetWeapons()) do
-      if (isCW2(weptbl) == false && isFAS2(weptbl) == false && isARCCW(weptbl) == false) then continue; end
+      if (isCW2(weptbl) == false and isFAS2(weptbl) == false and isARCCW(weptbl) == false) then continue; end
       
       local wepnode = weplist:AddNode(string.Trim(weptbl:GetPrintName()));
       
       local ammohead = nil;
-      for _, attinfo in pairs(istable(weptbl.Attachments) && weptbl.Attachments || {}) do
+      for _, attinfo in pairs(istable(weptbl.Attachments) and weptbl.Attachments or {}) do
          local header = getAttachmentHeader(weptbl, attinfo);
          local attachments = getSuitableAttachments(weptbl, attinfo);
 
-         // For some reason ArcCW will show all slots even if the current weapon doesnt have attachments for the slot
-         // This will prune those empty slots and only show the slots that have attachments
+         -- For some reason ArcCW will show all slots even if the current weapon doesnt have attachments for the slot
+         -- This will prune those empty slots and only show the slots that have attachments
          if (table.Count(attachments) == 0) then continue; end
 
          local headnode = wepnode:AddNode(header);
@@ -165,7 +165,7 @@ net.Receive("attvend", function(l)
                   mdl = getAttachmentViewModel(weptbl, attname);
                end
                
-               attinfopnl:Setup(attname, mdl || getAttachmentImage(attname), weptbl.ClassName);
+               attinfopnl:Setup(attname, mdl or getAttachmentImage(attname), weptbl.ClassName);
             end;
             attnode.Think = function(this)
                if (LocalPlayer():hasWeaponAttachment(attname)) then
@@ -177,12 +177,12 @@ net.Receive("attvend", function(l)
          end
       end
       
-      if (ATTACHMENT_VENDOR.cw2Mags.enable && isCW2Mag(weptbl.magType)) then
+      if (ATTACHMENT_VENDOR.cw2Mags.enable and isCW2Mag(weptbl.magType)) then
          if (ValidPanel(ammohead) == false) then
             ammohead = wepnode:AddNode("Ammo");
          end
          
-         /// TODO remove code duplication
+         ---@TODO remove code duplication
          local magnode = ammohead:AddNode(string.Trim(getAttachmentName(weptbl.magType)));
          magnode:SetIcon("icon16/add.png");
          magnode.DoClick = function(this)

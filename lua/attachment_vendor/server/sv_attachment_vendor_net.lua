@@ -22,18 +22,18 @@ net.Receive("attvend", function(l, p)
    local attname = net.ReadString();
    local ent = net.ReadEntity();
    
-   if (IsValid(ent) == false || ent:GetClass() != "attachment_vendor") then return; end
+   if (IsValid(ent) == false or ent:GetClass() ~= "attachment_vendor") then return; end
    
    local atts = {attname};
    
-   local malf = ent:Getdamaged() && ATTACHMENT_VENDOR.malfunction.allow && chance(ATTACHMENT_VENDOR.malfunction.chance);
-   local func = malf && chanceTbl[math.random(#chanceTbl)];
+   local malf = ent:Getdamaged() and ATTACHMENT_VENDOR.malfunction.allow and chance(ATTACHMENT_VENDOR.malfunction.chance);
+   local func = malf and chanceTbl[math.random(#chanceTbl)];
    
-   if (isstring(func) && chance(ATTACHMENT_VENDOR.malfunction[func .. "Chance"]) == false) then
+   if (isstring(func) and chance(ATTACHMENT_VENDOR.malfunction[func .. "Chance"]) == false) then
       func = false;
    end
    
-   // if the vendor can give extra attachments, do it
+   -- if the vendor can give extra attachments, do it
    if (func == "extra") then
       vendNotify(p, NOTIFY_ERROR, 4, "The vendor has malfunctioned and given you some extra attachments.");
       
@@ -45,7 +45,7 @@ net.Receive("attvend", function(l, p)
    
    local giveAtts = {};
    for k,v in pairs(atts) do
-      if (isCW2Mag(v) == false && p:hasWeaponAttachment(v)) then continue; end
+      if (isCW2Mag(v) == false and p:hasWeaponAttachment(v)) then continue; end
       
       table.insert(giveAtts, v);
    end
@@ -101,11 +101,11 @@ net.Receive("attvend", function(l, p)
    
    p:giveWeaponAttachments(giveAtts);
    
-   if (IsValid(ent:Getowning_ent()) && p != ent:Getowning_ent() && price > 0) then
+   if (IsValid(ent:Getowning_ent()) and p ~= ent:Getowning_ent() and price > 0) then
       local givePrice = ATTACHMENT_VENDOR.ownerPricePercentage(ent:Getowning_ent(), attname, price);
       local tax = price / givePrice;
       
       ent:Getowning_ent():addMoney(givePrice);
-      vendNotify(ent:Getowning_ent(), NOTIFY_GENERIC, 4, "You have sold " .. msg .. " for $" .. price .. ((tax != 1) && " (" .. tax .. "% tax)" || ""));
+      vendNotify(ent:Getowning_ent(), NOTIFY_GENERIC, 4, "You have sold " .. msg .. " for $" .. price .. ((tax ~= 1) and " (" .. tax .. "% tax)" or ""));
    end
 end);

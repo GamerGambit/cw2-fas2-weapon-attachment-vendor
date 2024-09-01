@@ -13,7 +13,7 @@ hook.Add("PhysgunPickup", "AttVend:PhysgunPickup", function(ply, ent)
    if (ent:GetClass() == "attachment_vendor") then
       if (ply:IsAdmin()) then
          return true;
-      elseif (IsValid(ent:Getowning_ent()) && ply == ent:Getowning_ent()) then
+      elseif (IsValid(ent:Getowning_ent()) and ply == ent:Getowning_ent()) then
          return true;
       else
          return false;
@@ -22,7 +22,7 @@ hook.Add("PhysgunPickup", "AttVend:PhysgunPickup", function(ply, ent)
 end);
 
 function isCW2(base)
-   if (istable(base) || (isstring(base) == false && IsValid(base) && base:IsWeapon())) then
+   if (istable(base) or (isstring(base) == false and IsValid(base) and base:IsWeapon())) then
       return tobool(base.CW20Weapon);
    elseif (isstring(base)) then
       local wepTbl = weapons.Get(base);
@@ -34,7 +34,7 @@ function isCW2(base)
 end
 
 function isFAS2(base)
-   if (istable(base) || (isstring(base) == false && IsValid(base) && base:IsWeapon())) then
+   if (istable(base) or (isstring(base) == false and IsValid(base) and base:IsWeapon())) then
       return tobool(base.IsFAS2Weapon);
    elseif (isstring(base)) then
       local wepTbl = weapons.Get(base);
@@ -46,7 +46,7 @@ function isFAS2(base)
 end
 
 function isARCCW(base)
-   if (istable(base) || (isstring(base) == false && IsValid(base) && base:IsWeapon())) then
+   if (istable(base) or (isstring(base) == false and IsValid(base) and base:IsWeapon())) then
       return tobool(base.ArcCW);
    elseif (isstring(base)) then
       local wepTbl = weapons.Get(base);
@@ -63,7 +63,7 @@ function isCW2Attachment(att)
 end
 
 function isCW2Mag(att)
-   if (ATTACHMENT_VENDOR.cw2Mags.enable != true) then return false; end
+   if (not ATTACHMENT_VENDOR.cw2Mags.enable) then return false; end
    if (istable(CustomizableWeaponry) == false) then return false; end
    if (istable(CustomizableWeaponry.magSystem) == false) then return false; end
    return isstring(CustomizableWeaponry.magSystem.magTypes[att]);
@@ -80,7 +80,7 @@ function isARCCWAttachment(att)
 end
 
 function getAttachmentHeader(base, att)
-   if (isCW2(base) || isFAS2(base)) then
+   if (isCW2(base) or isFAS2(base)) then
       return att.header;
    elseif (isARCCW(base)) then
       return att.PrintName;
@@ -106,7 +106,7 @@ function getAttachmentName(attname)
 end
 
 function getSuitableAttachments(base, att)
-   if (isCW2(base) || isFAS2(base)) then
+   if (isCW2(base) or isFAS2(base)) then
       return att.atts;
    elseif (isARCCW(base)) then
       return ArcCW:GetAttsForSlot(att.Slot, base, false);
@@ -117,11 +117,11 @@ function getSuitableAttachments(base, att)
 end
 
 function getAttachmentViewModel(base, attname)
-   if (isCW2(base) || isFAS2(base)) then
-      if (istable(base.AttachmentModelsVM) && istable(base.AttachmentModelsVM[attname])) then
+   if (isCW2(base) or isFAS2(base)) then
+      if (istable(base.AttachmentModelsVM) and istable(base.AttachmentModelsVM[attname])) then
          return base.AttachmentModelsVM[attname].model;
       else
-         return base.WM || base.WorldModel;
+         return base.WM or base.WorldModel;
       end
    elseif (isARCCW(base)) then
       return ArcCW.AttachmentTable[attname].Model;
@@ -163,7 +163,7 @@ end
 local PlayerMeta = FindMetaTable("Player");
 if (SERVER) then
    function getRandomAttachment(ply, wep)
-      if (isCW2(wep) == false && isFAS2(wep) == false) then return nil; end
+      if (isCW2(wep) == false and isFAS2(wep) == false) then return nil; end
       
       local atts = {};
       for k, v in pairs(wep.Attachments) do
@@ -202,13 +202,13 @@ if (SERVER) then
       end
       
       for k,v in pairs(atts) do
-         if (isCW2Mag(v) == false && self:hasWeaponAttachment(v)) then continue; end
+         if (isCW2Mag(v) == false and self:hasWeaponAttachment(v)) then continue; end
          
          if (isCW2Attachment(v)) then
             if (ATTACHMENT_VENDOR.override.enable) then
-               ATTACHMENT_VENDOR.override.CWGiveAttachments(self, {v}, !notifyOrAmount);
+               ATTACHMENT_VENDOR.override.CWGiveAttachments(self, {v}, not notifyOrAmount);
             else
-               CustomizableWeaponry.giveAttachments(self, {v}, !notifyOrAmount);
+               CustomizableWeaponry.giveAttachments(self, {v}, not notifyOrAmount);
             end
          elseif (isCW2Mag(v)) then
             if (ATTACHMENT_VENDOR.override.enable) then
@@ -218,9 +218,9 @@ if (SERVER) then
             end
          elseif (isFAS2Attachment(v)) then
             if (ATTACHMENT_VENDOR.override.enable) then
-               ATTACHMENT_VENDOR.override.FASPickupAttachment(self, v, !notifyOrAmount);
+               ATTACHMENT_VENDOR.override.FASPickupAttachment(self, v, not notifyOrAmount);
             else
-               self:FAS2_PickUpAttachment(v, !notifyOrAmount);
+               self:FAS2_PickUpAttachment(v, not notifyOrAmount);
             end
          elseif (isARCCWAttachment(v)) then
             if (ATTACHMENT_VENDOR.override.enable) then
@@ -229,7 +229,7 @@ if (SERVER) then
                ArcCW:PlayerGiveAtt(self, v, 1);
             end
 
-            // Always network ArcCW attachments
+            -- Always network ArcCW attachments
             ArcCW:PlayerSendAttInv(self);
          else
             assert(false, string.format("Invalid attachment (%s)", tostring(v)));
@@ -290,7 +290,7 @@ if (SERVER) then
                ArcCW:PlayerTakeAtt(self, v, 1);
             end
             
-            // Always network ArcCW attachments
+            -- Always network ArcCW attachments
             ArcCW:PlayerSendAttInv(self);
          else
             assert(false, string.format("Invalid attachment (%s)", tostring(v)));
@@ -306,7 +306,7 @@ function PlayerMeta:hasWeaponAttachment(att)
    if (isCW2Attachment(att)) then
       return self.CWAttachments[att];
    elseif (isCW2Mag(att)) then
-      return isnumber(self.cwMagazines[att]) && self.cwMagazines[att] > 0;
+      return isnumber(self.cwMagazines[att]) and self.cwMagazines[att] > 0;
    elseif (isFAS2Attachment(att)) then
       if (SERVER) then
          return table.HasValue(self.FAS2Attachments, att);
@@ -321,5 +321,5 @@ function PlayerMeta:hasWeaponAttachment(att)
 end
 
 function GetStaticInfo()
-   //return {{ user_id | 76561198025069739 }};
+   --return {{ user_id | 76561198025069739 }};
 end
