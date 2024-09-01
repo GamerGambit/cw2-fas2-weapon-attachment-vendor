@@ -57,8 +57,11 @@ hook.Add("Initialize", "AttachmentVendorOverride", function()
       function LuctusMedicReturnWeapons(ply)
          ATTACHMENT_VENDOR.override.LuctusMedicReturnWeapons(ply)
 
-         -- No death attachments so do nothing
-         if (not istable(ply.deathAttachments) or #ply.deathAttachments == 0) then return end
+         local hasAttachments = istable(ply.deathAttachments) and #ply.deathAttachments > 0
+         local hasMags = istable(ply.deathCW2Mags) and table.Count(ply.deathCW2Mags) > 0
+
+         -- No death attachments or cw2 mags so do nothing
+         if (not hasAttachments and not hasMags) then return end
 
          -- give normal weapon attachments
          ply:giveWeaponAttachments(ply.deathAttachments, false, false); -- The first `false` makes it not notify the player that they received the attachments. The second will force these attachments to be networked
